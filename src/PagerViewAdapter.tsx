@@ -35,6 +35,7 @@ type Props<T extends Route> = PagerProps & {
 export default function PagerViewAdapter<T extends Route>({
   keyboardDismissMode = 'auto',
   swipeEnabled = true,
+  isAnimation = true,
   navigationState,
   onIndexChange,
   onSwipeStart,
@@ -63,8 +64,12 @@ export default function PagerViewAdapter<T extends Route>({
       (route: { key: string }) => route.key === key
     );
 
-    pagerRef.current?.setPageWithoutAnimation(index);
-  }, []);
+    if (isAnimation) {
+      pagerRef.current?.setPage(index);
+    } else {
+      pagerRef.current?.setPageWithoutAnimation(index);
+    }
+  }, [isAnimation]);
 
   React.useEffect(() => {
     if (keyboardDismissMode === 'auto') {
@@ -72,9 +77,13 @@ export default function PagerViewAdapter<T extends Route>({
     }
 
     if (indexRef.current !== index) {
-      pagerRef.current?.setPageWithoutAnimation(index);
+      if (isAnimation) {
+        pagerRef.current?.setPage(index);
+      } else {
+        pagerRef.current?.setPageWithoutAnimation(index);
+      }
     }
-  }, [keyboardDismissMode, index]);
+  }, [keyboardDismissMode, isAnimation, index]);
 
   const onPageScrollStateChanged = (
     state: PageScrollStateChangedNativeEvent
